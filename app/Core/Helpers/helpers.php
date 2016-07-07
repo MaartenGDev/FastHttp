@@ -4,7 +4,6 @@ if(!function_exists('contains')){
     function contains($haystack,$needle){
         return strpos($haystack,$needle) !== false;
     }
-
 }
 
 if(!function_exists('home')){
@@ -12,7 +11,6 @@ if(!function_exists('home')){
     function home(){
         return __DIR__ . '/../../../';
     }
-
 }
 if(!function_exists('path')){
 
@@ -24,5 +22,14 @@ if(!function_exists('path')){
 
         return home() . $items[$key];
     }
+}
+if(!function_exists('explodeUrl')){
 
+    function explodeUrl($url,$offset = 0){
+        $urlComponents = explode('/',substr($url,$offset));
+
+        return array_filter($urlComponents,function($component) {
+            return $component != '';
+        });
+    }
 }

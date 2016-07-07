@@ -2,13 +2,12 @@
 
 namespace App\Core\Http\Routing;
 
-use Illuminate\Container\Container;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 
-class ControllerResolver
+class ControllerResolver implements IControllerResolver
 {
     private $namespace = 'App\\Http\\Controllers\\';
     private $request;
@@ -27,6 +26,7 @@ class ControllerResolver
                 break;
             }
         }
+
         if(!$controller){
             throw new NotFoundHttpException('Page Not Found',null,404);
         }
@@ -39,8 +39,8 @@ class ControllerResolver
 
     public function requestMatchRoute(Request $request,Route $route){
 
-        $routeParts = $this->explodeUrl($route->getPath());
-        $requestParts = $this->explodeUrl($request->server->get('REQUEST_URI'));
+        $routeParts = explodeUrl($route->getPath());
+        $requestParts = explodeUrl($request->server->get('REQUEST_URI'));
 
         $routeParts = array_map(function($route,$uri){
             if(contains($route,'{')) {
@@ -53,15 +53,12 @@ class ControllerResolver
             return $route;
         },$routeParts,$requestParts);
 
-        return in_array($request->getMethod(),$route->getMethods()) && implode('/',$routeParts) == implode('/',$requestParts);
+        $requestMethodIsAllowedMethod = in_array($request->getMethod(),$route->getMethods());
+
+        $routeUri = implode('/',$routeParts);
+        $requestUri = implode('/',$requestParts);
+
+        return  $requestMethodIsAllowedMethod &&  $routeUri == $requestUri;
     }
 
-
-    public function explodeUrl($url,$offset = 0){
-        $urlComponents = explode('/',substr($url,$offset));
-
-        return array_filter($urlComponents,function($component) {
-            return $component != '';
-        });
-    }
 }
