@@ -56,9 +56,17 @@ class ControllerResolver implements IControllerResolver
         $requestMethodIsAllowedMethod = in_array($request->getMethod(),$route->getMethods());
 
         $routeUri = implode('/',$routeParts);
+        $requestUri = $this->cleanRequestUri($requestParts);
+
+        return $requestMethodIsAllowedMethod &&  $routeUri == $requestUri;
+    }
+    public function cleanRequestUri($requestParts){
         $requestUri = implode('/',$requestParts);
 
-        return  $requestMethodIsAllowedMethod &&  $routeUri == $requestUri;
+        // Remove Folder preview if the project is placed inside a folder.
+        $requestUri = str_replace(getProjectFolder(),'',$requestUri);
+
+        return $requestUri !== '' ? $requestUri : '/';
     }
 
 }
