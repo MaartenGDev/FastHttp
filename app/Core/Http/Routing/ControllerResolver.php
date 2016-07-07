@@ -40,7 +40,14 @@ class ControllerResolver implements IControllerResolver
     public function requestMatchRoute(Request $request,Route $route){
 
         $routeParts = explodeUrl($route->getPath());
-        $requestParts = explodeUrl($request->server->get('REQUEST_URI'));
+
+        $requestUri = $this->cleanRequestUri(
+            $request->server->get('REQUEST_URI')
+        );
+
+        $requestParts = explodeUrl($requestUri);
+
+
 
         $routeParts = array_map(function($route,$uri){
             if(contains($route,'{')) {
@@ -53,15 +60,24 @@ class ControllerResolver implements IControllerResolver
             return $route;
         },$routeParts,$requestParts);
 
+        if(count($requestParts) == 0){
+            $requestUri = '/';
+        }
+        if(count($routeParts) > 0){
+            $routeUri = implode('/',$routeParts);
+        }else{
+            $routeUri = '/';
+        }
         $requestMethodIsAllowedMethod = in_array($request->getMethod(),$route->getMethods());
 
-        $routeUri = implode('/',$routeParts);
-        $requestUri = $this->cleanRequestUri($requestParts);
 
         return $requestMethodIsAllowedMethod &&  $routeUri == $requestUri;
     }
     public function cleanRequestUri($requestParts){
+
+        // If someone requested from the root of a folder.
         $requestUri = implode('/',$requestParts);
+
 
         // Remove Folder preview if the project is placed inside a folder.
         $requestUri = str_replace(getProjectFolder(),'',$requestUri);

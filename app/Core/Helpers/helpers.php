@@ -33,7 +33,7 @@ if(!function_exists('explodeUrl')){
         });
     }
 }
-if(!function_exists('projectFolder')){
+if(!function_exists('getProjectFolder')){
     function getProjectFolder(){
         return substr(str_replace('/index.php','',$_SERVER['DOCUMENT_URI']),1);
     }
