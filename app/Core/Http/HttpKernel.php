@@ -5,37 +5,48 @@ namespace App\Core\Http;
 
 use App\Core\Http\Routing\ArgumentResolver;
 use App\Core\Http\Routing\ControllerResolver;
-use Exception;
+use FastRoute\Dispatcher;
+use HttpRequestMethodException;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Exception\MethodNotAllowedException;
 
 class HttpKernel
 {
     public function sendRequestThroughRouter(Request $request){
 
-        $routeMatcher = new ControllerResolver($request);
-        list($controller,$request) = $routeMatcher->getController($this->getRoutes(),$request);
+        $controllerAndParameters = $this->matchRouteAndGetParameters($request);
 
-        $arguments = new ArgumentResolver($controller,$request);
+        $arguments = new ArgumentResolver($controllerAndParameters,$request);
 
-        return call_user_func_array($controller,$arguments->all());
+        return call_user_func_array(
+            $arguments->getController(),
+            $arguments->getArguments()
+        );
     }
 
-    public function getRoutes(){
+    public function matchRouteAndGetParameters(Request $request){
         $routes = require_once home().'app/Http/routes.php';
 
-        return $routes;
+
+        $routeStatus = $routes->dispatch(
+            $request->server->get('REQUEST_METHOD'),
+            $request->server->get('REQUEST_URI')
+
+        );
+
+        if($routeStatus[0] === Dispatcher::NOT_FOUND){
+            throw new NotFoundHttpException();
+        }
+
+        if($routeStatus[0] === Dispatcher::METHOD_NOT_ALLOWED){
+            throw new MethodNotAllowedException($routes->variableRouteData);
+        }
+
+
+        return $routeStatus;
     }
 
-    public function registerErrorHandler(){
-//        set_exception_handler(function(Exception $e){
-//            $response = new Response(json_encode([
-//                'message' => $e->getMessage(),
-//            ]),$e->getCode());
-//            $response->headers->set('Content-Type','application/json');
-//            $response->send();
-//        });
-    }
     public function handle(Request $request){
        return $this->sendRequestThroughRouter($request);
     }

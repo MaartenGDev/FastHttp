@@ -9,27 +9,35 @@ use Symfony\Component\HttpFoundation\Request;
 
 class ArgumentResolver
 {
-    private $controller;
     private $request;
-
-    public function __construct($controller,Request $request)
+    private $parameters;
+    private $controller;
+    private $namespace = 'App\Http\Controllers\\';
+    public function __construct($parameters,Request $request)
     {
-        $this->controller = $controller;
         $this->request = $request;
+        $this->parameters = $parameters[2];
+        $this->controller = $this->namespace . $parameters[1];
     }
 
-    public function all(){
-        return $this->getArguments(...$this->controller);
+    public function getController(){
+     return str_replace('@','::',$this->controller);
     }
 
-    public function getArguments($controller,$method){
+    private function getControllerAndMethod(){
+        return explode('@',$this->controller);
+    }
+
+    public function getArguments(){
+        list($controller,$method) = $this->getControllerAndMethod();
+
         $arguments = [];
 
         $reflection = new ReflectionClass($controller);
         $parameters = $reflection->getMethod($method)->getParameters();
 
        foreach($parameters as $parameter){
-           $value = $this->request->request->get($parameter->name);
+           $value = $this->parameters[$parameter->name];
 
            if(!is_null($parameter->getClass()) && $parameter->getClass()->getName() == Request::class){
                 $value = $this->request;

@@ -16,9 +16,6 @@ use Whoops\Handler\JsonResponseHandler;
 */
 require_once __DIR__.'/../vendor/autoload.php';
 
-/* Get the app Instance */
-$app = require_once __DIR__.'/../bootstrap/app.php';
-
 
 /*
 |---------------------------------------------
@@ -29,21 +26,14 @@ $app = require_once __DIR__.'/../bootstrap/app.php';
 |
 */
 
-
 $kernel = new Kernel();
-
-$kernel->registerErrorHandler();
 
 $response = $kernel->handle(
     $request = Request::createFromGlobals()
 );
 
 
-// Set Header for Ajax clients.
-$response->headers->set('Access-Control-Allow-Origin','*');
-
 $response->send();
 
-$kernel->terminate($request, $response);
 
 

@@ -1,15 +1,10 @@
 <?php
-use Symfony\Component\Routing\Route;
-use Symfony\Component\Routing\RouteCollection;
+use FastRoute\RouteCollector;
+use function FastRoute\simpleDispatcher;
 
-$routes = new RouteCollection();
+$dispatcher = simpleDispatcher(function(RouteCollector $r) {
+    $r->addRoute('GET', '/users/{name}/{job}', 'WelcomeController@hello');
 
-$welcome = new Route('/', array(
-    '_controller' => 'WelcomeController@hello'
-));
+});
 
-$welcome->setMethods(['GET']);
-
-$routes->add('welcome',$welcome);
-
-return $routes;
+return $dispatcher;

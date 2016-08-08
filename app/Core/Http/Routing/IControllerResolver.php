@@ -11,6 +11,4 @@ use Symfony\Component\Routing\RouteCollection;
 interface IControllerResolver
 {
     public function getController(RouteCollection $collection,Request $request);
-    public function requestMatchRoute(Request $request,Route $route);
-
 }
