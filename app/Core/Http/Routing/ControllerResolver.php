@@ -27,6 +27,4 @@ class ControllerResolver implements IControllerResolver
 
         return [$controller,$this->request];
     }
-
-
 }
