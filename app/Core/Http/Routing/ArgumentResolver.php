@@ -24,12 +24,8 @@ class ArgumentResolver
      return str_replace('@','::',$this->controller);
     }
 
-    private function getControllerAndMethod(){
-        return explode('@',$this->controller);
-    }
-
     public function getArguments(){
-        list($controller,$method) = $this->getControllerAndMethod();
+        list($controller,$method) = explode('@',$this->controller);
 
         $arguments = [];
 
