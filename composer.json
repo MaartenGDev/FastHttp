@@ -12,7 +12,9 @@
         "nikic/fast-route": "^1.0",
         "symfony/var-dumper": "^3.1",
         "illuminate/database": "^5.2",
-        "illuminate/events": "^5.2"
+        "illuminate/events": "^5.2",
+        "vlucas/phpdotenv": "^2.3",
+        "twig/twig": "~1.0"
     },
     "authors": [
         {

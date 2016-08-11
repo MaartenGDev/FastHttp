@@ -4,6 +4,7 @@
 namespace App\Core\Http;
 
 use App\Core\Http\Routing\ArgumentResolver;
+use Dotenv\Dotenv;
 use FastRoute\Dispatcher as Router;
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,8 +22,10 @@ class HttpKernel
 
         $arguments = new ArgumentResolver($controllerAndParameters, $request);
 
-        return call_user_func_array(
-            $arguments->getController(),
+        return call_user_func_array([
+                $arguments->getController(),
+                $arguments->getMethod()
+            ],
             $arguments->getArguments()
         );
     }
@@ -50,22 +53,17 @@ class HttpKernel
 
         return $routeStatus;
     }
+    private function registerDotEnv(){
+        $dotenv = new Dotenv(home());
+        $dotenv->load();
+    }
 
     private function registerEloquent()
     {
 
         $capsule = new Capsule;
 
-        $capsule->addConnection([
-            'driver' => 'mysql',
-            'host' => 'localhost',
-            'database' => 'MoveThisToEnvFile',
-            'username' => 'root',
-            'password' => 'secure',
-            'charset' => 'utf8',
-            'collation' => 'utf8_unicode_ci',
-            'prefix' => '',
-        ]);
+        $capsule->addConnection(getConfig('database'));
 
         $capsule->setEventDispatcher(new Dispatcher(new Container));
 
@@ -75,9 +73,14 @@ class HttpKernel
 
     }
 
+    private function loadDependencies(){
+        $this->registerDotEnv();
+        $this->registerEloquent();
+    }
+
     public function handle(Request $request)
     {
-        $this->registerEloquent();
+        $this->loadDependencies();
         return $this->sendRequestThroughRouter($request);
     }
 }

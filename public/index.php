@@ -1,10 +1,8 @@
 <?php
-use App\Core\Application;
 use App\Http\Kernel;
-use app\Repositories\PostRepository;
+use App\Repositories\FlightRepository;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Whoops\Handler\JsonResponseHandler;
+
 
 /*
 |--------------------------------------------------|
@@ -18,11 +16,13 @@ use Whoops\Handler\JsonResponseHandler;
 */
 require_once __DIR__.'/../vendor/autoload.php';
 
+
 $app = require_once '../bootstrap/app.php';
 
 $app->bind('App\Repositories\PostRepository', function(){
-    return new PostRepository();
+    return new FlightRepository();
 });
+
 
 /*
 |---------------------------------------------

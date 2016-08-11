@@ -2,3 +2,5 @@
 /.idea/
 /storage/cache/
 /storage/log/
+/storage/views/
+.env

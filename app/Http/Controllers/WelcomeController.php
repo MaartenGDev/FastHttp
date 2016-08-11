@@ -3,33 +3,35 @@
 
 namespace App\Http\Controllers;
 
+use App\Flight;
+use App\Repositories\FlightRepository;
 use Symfony\Component\HttpFoundation\Response;
-use app\Repositories\PostRepository;
-use App\User;
 
 class WelcomeController
 {
     /**
-     * @var PostRepository
+     * @var FlightRepository
      */
-    private $posts;
+    private $flights;
 
-    public function __construct(PostRepository $posts)
+    public function __construct(FlightRepository $flights)
     {
-        $this->posts = $posts;
+        $this->flights = $flights;
     }
 
-    public function show(User $user){
-        return new Response('user here');
+    public function show($name){
+        return view('flights/list',array(
+            'flights' => $this->flights->getFlightByName($name)
+        ));
     }
-    public function hello($name,$job){
-        $user = new User();
-        $user->name = $name;
 
-        $user->save();
+    public function flight($name,$description){
+        $flight = new Flight();
+        $flight->name = $name;
+        $flight->description = $description;
 
-        return new Response('Hello ' . $name . ' you have the following job '. $job);
+        $flight->save();
 
-
+        return new Response('Created new flight with the name: ' . $name . ' and the following description: '. $description);
     }
 }
