@@ -12,6 +12,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Exception\MethodNotAllowedException;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Container\Container;
+use Whoops\Handler\PrettyPageHandler;
+use Whoops\Run;
 
 class HttpKernel
 {
@@ -23,9 +25,9 @@ class HttpKernel
         $arguments = new ArgumentResolver($controllerAndParameters, $request);
 
         return call_user_func_array([
-                $arguments->getController(),
-                $arguments->getMethod()
-            ],
+            $arguments->getController(),
+            $arguments->getMethod()
+        ],
             $arguments->getArguments()
         );
     }
@@ -53,7 +55,9 @@ class HttpKernel
 
         return $routeStatus;
     }
-    private function registerDotEnv(){
+
+    private function registerDotEnv()
+    {
         $dotenv = new Dotenv(home());
         $dotenv->load();
     }
@@ -73,7 +77,17 @@ class HttpKernel
 
     }
 
-    private function loadDependencies(){
+    private function registerErrorHandler()
+    {
+        $whoops = new Run;
+        $whoops->pushHandler(new PrettyPageHandler);
+        $whoops->register();
+    }
+
+    private function loadDependencies()
+    {
+        $this->registerErrorHandler();
+
         $this->registerDotEnv();
         $this->registerEloquent();
     }
