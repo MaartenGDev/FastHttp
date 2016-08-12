@@ -16,14 +16,6 @@ use Symfony\Component\HttpFoundation\Request;
 */
 require_once __DIR__.'/../vendor/autoload.php';
 
-
-$app = require_once '../bootstrap/app.php';
-
-$app->bind('App\Repositories\PostRepository', function(){
-    return new FlightRepository();
-});
-
-
 /*
 |---------------------------------------------
 | Run The Application
