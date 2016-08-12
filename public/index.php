@@ -1,4 +1,5 @@
 <?php
+use App\Core\Http\HttpKernel;
 use App\Http\Kernel;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -24,7 +25,7 @@ require_once __DIR__.'/../vendor/autoload.php';
 |
 */
 
-$kernel = new Kernel();
+$kernel = new HttpKernel();
 
 $response = $kernel->handle(
     $request = Request::createFromGlobals()

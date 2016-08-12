@@ -19,7 +19,6 @@ class HttpKernel
 {
     public function sendRequestThroughRouter(Request $request)
     {
-
         $controllerAndParameters = $this->matchRouteAndGetParameters($request);
 
         $arguments = new ArgumentResolver($controllerAndParameters, $request);
@@ -36,22 +35,21 @@ class HttpKernel
     {
         $routes = require_once home() . 'app/Http/routes.php';
 
-
         $routeStatus = $routes->dispatch(
             $request->server->get('REQUEST_METHOD'),
             $request->server->get('REQUEST_URI')
 
         );
+
         $status = $routeStatus[0];
 
         if ($status === Router::NOT_FOUND) {
-            throw new NotFoundHttpException();
+            throw new NotFoundHttpException('Route Not Found',null,404);
         }
 
         if ($status === Router::METHOD_NOT_ALLOWED) {
             throw new MethodNotAllowedException($routes->variableRouteData);
         }
-
 
         return $routeStatus;
     }
@@ -87,7 +85,6 @@ class HttpKernel
     private function loadDependencies()
     {
         $this->registerErrorHandler();
-
         $this->registerDotEnv();
         $this->registerEloquent();
     }
